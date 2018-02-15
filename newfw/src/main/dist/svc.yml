@@ -1,25 +1,18 @@
 name: {{FRAMEWORK_NAME}}
-scheduler:
-  principal: {{FRAMEWORK_PRINCIPAL}}
-  user: {{FRAMEWORK_USER}}
 pods:
   newfw:
-    count: {{NODE_COUNT}}
-    placement: '{{{NODE_PLACEMENT}}}'
-    {{#ENABLE_VIRTUAL_NETWORK}}
-    networks:
-      {{VIRTUAL_NETWORK_NAME}}:
-        labels: {{VIRTUAL_NETWORK_PLUGIN_LABELS}}
-    {{/ENABLE_VIRTUAL_NETWORK}}
+    count: 1
     tasks:
       node:
         goal: RUNNING
-        cmd: "echo newfw >> newfw-container-path/output && sleep $SLEEP_DURATION"
-        cpus: {{NODE_CPUS}}
-        memory: {{NODE_MEM}}
-        volume:
-          path: "newfw-container-path"
-          type: {{NODE_DISK_TYPE}}
-          size: {{NODE_DISK}}
-        env:
-          SLEEP_DURATION: {{SLEEP_DURATION}}
+        cmd: "echo hello && sleep 10"
+        cpus: 0.1
+        memory: 252
+  demofw:
+    count: 1
+    tasks:
+      data:
+        goal: RUNNING
+        cmd: "echo hi && sleep 10"
+        cpus: 0.1
+        memory: 252

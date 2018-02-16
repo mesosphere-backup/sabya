@@ -1,0 +1,4 @@
+PACKAGE_NAME = 'sabyafw'
+SERVICE_NAME = 'sabyafw'
+DEFAULT_TASK_COUNT = 1
+

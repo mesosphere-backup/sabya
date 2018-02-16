@@ -1,0 +1,76 @@
+name: {{FRAMEWORK_NAME}}
+scheduler:
+  principal: {{FRAMEWORK_PRINCIPAL}}
+  user: {{FRAMEWORK_USER}}
+pods:
+ sabyafw:
+    count: {{NODE_COUNT}}
+    placement: '{{{NODE_PLACEMENT}}}'
+    {{#ENABLE_VIRTUAL_NETWORK}}
+    networks:
+      {{VIRTUAL_NETWORK_NAME}}:
+        labels: {{VIRTUAL_NETWORK_PLUGIN_LABELS}}
+    {{/ENABLE_VIRTUAL_NETWORK}}
+    tasks:
+      init:
+        goal: ONCE
+        cmd: "echo Helloinit"
+        cpus: {{NODE_CPUS}}
+        memory: {{NODE_MEM}}
+      node:
+        goal: RUNNING
+        cmd: "echo Hello $POD_INSTANCE_INDEX"
+        cpus: {{NODE_CPUS}}
+        memory: {{NODE_MEM}}
+        volume:
+          path: "sabyafw-container-path"
+          type: {{NODE_DISK_TYPE}}
+          size: {{NODE_DISK}}
+        env:
+          SLEEP_DURATION: {{SLEEP_DURATION}}
+      node1:
+        goal: RUNNING
+        cmd: "echo Hello update $POD_INSTANCE_INDEX"
+        cpus: 0.4
+        memory: {{NODE_MEM}}
+ sabyaxw:
+    count: {{NODE_COUNT}}
+    placement: '{{{NODE_PLACEMENT}}}'
+    {{#ENABLE_VIRTUAL_NETWORK}}
+    networks:
+      {{VIRTUAL_NETWORK_NAME}}:
+        labels: {{VIRTUAL_NETWORK_PLUGIN_LABELS}}
+    {{/ENABLE_VIRTUAL_NETWORK}}
+    tasks:
+      node:
+        goal: RUNNING
+        cmd: "echo Hello2  && sleep $SLEEP_DURATION"
+        cpus: {{NODE_CPUS}}
+        memory: {{NODE_MEM}}
+        volume:
+          path: "sabyafw-container-path"
+          type: {{NODE_DISK_TYPE}}
+          size: {{NODE_DISK}}
+        env:
+          SLEEP_DURATION: {{SLEEP_DURATION}}
+plans:
+ deploy:
+   strategy: serial
+   phases:
+     sabyafw-deploy:
+       strategy: parallel
+       pod: sabyafw
+       steps:
+        - 0: [[init], [node]] 
+        - default: [[node]]
+     sabyaxw-deploy:
+       strategy: parallel
+       pod: sabyaxw
+ update:
+   strategy: serial
+   phases:
+     sabyafw-update:
+       strategy: parallel
+       pod: sabyafw
+       steps:
+        - default: [[node1]]

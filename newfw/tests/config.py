@@ -1,4 +1,0 @@
-PACKAGE_NAME = 'newfw'
-SERVICE_NAME = 'newfw'
-DEFAULT_TASK_COUNT = 1
-
